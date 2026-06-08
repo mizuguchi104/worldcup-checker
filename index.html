@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>W杯観戦アシスタント</title>
+</head>
+<body>
+
+    <h1>W杯観戦アシスタント</h1>
+<select id="country">
+    <option value="">すべて</option>
+    <option value="日本">日本</option>
+    <option value="ドイツ">ドイツ</option>
+    <option value="ブラジル">ブラジル</option>
+</select>
+    <div id="matches"></div>
+
+    <script>
+
+    const matches = [
+        {
+            home: "日本",
+            away: "ドイツ",
+            kickoff: "2026-06-15 05:00"
+        },
+        {
+            home: "ブラジル",
+            away: "アルゼンチン",
+            kickoff: "2026-06-15 11:00"
+        },
+        {
+            home: "日本",
+            away: "韓国",
+            kickoff: "2026-06-16 05:00"
+        }
+    ];
+
+    const countrySelect =
+        document.getElementById("country");
+
+    const matchDiv =
+        document.getElementById("matches");
+
+    function displayMatches() {
+
+        const selectedCountry =
+            countrySelect.value;
+
+        matchDiv.innerHTML = "";
+
+        matches.forEach(match => {
+
+            if (
+                selectedCountry === ""
+                || match.home === selectedCountry
+                || match.away === selectedCountry
+            ) {
+
+                matchDiv.innerHTML += `
+                    <p>
+                        ${match.home} vs ${match.away}
+                        (${match.kickoff})
+                    </p>
+                `;
+            }
+
+        });
+
+    }
+
+    countrySelect.addEventListener(
+        "change",
+        displayMatches
+    );
+
+    displayMatches();
+</script>
+ 
+    </script>
+
+</body>
+</html>
