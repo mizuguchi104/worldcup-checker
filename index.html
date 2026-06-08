@@ -31,29 +31,51 @@ header {
     padding: 16px;
 }
 
-/* フィルター */
-#country {
-    width: 100%;
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    margin-bottom: 16px;
+/* ボタン */
+#viewModeBtn, #todayBtn {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 14px;
+    border: none;
+    border-radius: 20px;
+    background: #111827;
+    color: white;
     font-size: 14px;
-    background: white;
+    cursor: pointer;
+    width: 80%;
+    max-width: 300px;
 }
 
-/* カード */
+#viewModeBtn.active,
+#todayBtn.active {
+    background: #22c55e;
+}
+
+/* チェックボックス */
+#countryList {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+    justify-content: center;
+}
+
+#countryList label {
+    background: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* 試合カード */
 .match {
     background: white;
     border-radius: 14px;
     padding: 14px 16px;
     margin-bottom: 12px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-    transition: 0.2s;
-}
-
-.match:hover {
-    transform: translateY(-2px);
 }
 
 .teams {
@@ -78,12 +100,14 @@ header {
 
 <div class="container">
 
-    <select id="country">
-        <option value="">すべて</option>
-        <option value="日本">日本</option>
-        <option value="ドイツ">ドイツ</option>
-        <option value="ブラジル">ブラジル</option>
-    </select>
+    <button id="viewModeBtn">見れる試合だけ</button>
+    <button id="todayBtn">今日の試合だけ</button>
+
+    <div id="countryList">
+        <label><input type="checkbox" value="日本"> 日本</label>
+        <label><input type="checkbox" value="ドイツ"> ドイツ</label>
+        <label><input type="checkbox" value="ブラジル"> ブラジル</label>
+    </div>
 
     <div id="matches"></div>
 
@@ -96,35 +120,95 @@ const matches = [
     { home: "日本", away: "韓国", kickoff: "2026-06-16 05:00" }
 ];
 
-const countrySelect = document.getElementById("country");
+let viewModeOnly = false;
+let todayOnly = false;
+
 const matchDiv = document.getElementById("matches");
+const viewModeBtn = document.getElementById("viewModeBtn");
+const todayBtn = document.getElementById("todayBtn");
+
+function isWeekend(dateStr) {
+    const date = new Date(dateStr);
+    const day = date.getDay();
+    return day === 0 || day === 6;
+}
+
+function isToday(dateStr) {
+    const today = new Date();
+    const d = new Date(dateStr);
+
+    return (
+        today.getFullYear() === d.getFullYear() &&
+        today.getMonth() === d.getMonth() &&
+        today.getDate() === d.getDate()
+    );
+}
+
+function getSelectedCountries() {
+    const checkboxes = document.querySelectorAll("#countryList input");
+    const selected = [];
+
+    checkboxes.forEach(cb => {
+        if (cb.checked) selected.push(cb.value);
+    });
+
+    return selected;
+}
 
 function displayMatches() {
-    const selectedCountry = countrySelect.value;
+
+    const selectedCountries = getSelectedCountries();
 
     matchDiv.innerHTML = "";
 
     matches.forEach(match => {
-        if (
-            selectedCountry === "" ||
-            match.home === selectedCountry ||
-            match.away === selectedCountry
-        ) {
+
+        const date = match.kickoff;
+        const hour = new Date(date).getHours();
+
+        const timeOK = viewModeOnly
+            ? (isWeekend(date) || hour === 5 || hour === 11)
+            : true;
+
+        const todayOK = todayOnly
+            ? isToday(date)
+            : true;
+
+        const countryOK =
+            selectedCountries.length === 0 ||
+            selectedCountries.includes(match.home) ||
+            selectedCountries.includes(match.away);
+
+        if (timeOK && todayOK && countryOK) {
+
             matchDiv.innerHTML += `
                 <div class="match">
-                    <div class="teams">
-                        ${match.home} vs ${match.away}
-                    </div>
-                    <div class="time">
-                        ${match.kickoff}
-                    </div>
+                    <div class="teams">${match.home} vs ${match.away}</div>
+                    <div class="time">${match.kickoff}</div>
                 </div>
             `;
         }
     });
 }
 
-countrySelect.addEventListener("change", displayMatches);
+/* イベント */
+
+document.querySelectorAll("#countryList input")
+    .forEach(cb => {
+        cb.addEventListener("change", displayMatches);
+    });
+
+viewModeBtn.addEventListener("click", () => {
+    viewModeOnly = !viewModeOnly;
+    viewModeBtn.classList.toggle("active");
+    displayMatches();
+});
+
+todayBtn.addEventListener("click", () => {
+    todayOnly = !todayOnly;
+    todayBtn.classList.toggle("active");
+    displayMatches();
+});
 
 displayMatches();
 </script>
