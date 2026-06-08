@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>W杯観戦アシスタント</title>
+    <style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+            "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+        background: #f4f6f8;
+        margin: 0;
+        padding: 0;
+        color: #222;
+    }
+
+    h1 {
+        text-align: center;
+        padding: 20px 10px;
+        margin: 0;
+        background: #1f2937;
+        color: white;
+        font-size: 20px;
+        letter-spacing: 1px;
+    }
+
+    #country {
+        display: block;
+        margin: 15px auto;
+        padding: 10px 12px;
+        font-size: 14px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        background: white;
+    }
+
+    #matches {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 10px;
+    }
+
+    .match {
+        background: white;
+        margin: 10px 0;
+        padding: 14px 16px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        transition: transform 0.1s ease;
+    }
+
+    .match:hover {
+        transform: scale(1.01);
+    }
+
+    .teams {
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    .time {
+        font-size: 13px;
+        color: #666;
+        margin-top: 5px;
+    }
+</style>
+</head>
+<body>
+
+    <h1>W杯観戦アシスタント</h1>
+<select id="country">
+    <option value="">すべて</option>
+    <option value="日本">日本</option>
+    <option value="ドイツ">ドイツ</option>
+    <option value="ブラジル">ブラジル</option>
+</select>
+    <div id="matches"></div>
+
+    <script>
+
+    const matches = [
+        {
+            home: "日本",
+            away: "ドイツ",
+            kickoff: "2026-06-15 05:00"
+        },
+        {
+            home: "ブラジル",
+            away: "アルゼンチン",
+            kickoff: "2026-06-15 11:00"
+        },
+        {
+            home: "日本",
+            away: "韓国",
+            kickoff: "2026-06-16 05:00"
+        }
+    ];
+
+    const countrySelect =
+        document.getElementById("country");
+
+    const matchDiv =
+        document.getElementById("matches");
+
+    function displayMatches() {
+
+        const selectedCountry =
+            countrySelect.value;
+
+        matchDiv.innerHTML = "";
+
+        matches.forEach(match => {
+
+            if (
+                selectedCountry === ""
+                || match.home === selectedCountry
+                || match.away === selectedCountry
+            ) {
+
+              matchDiv.innerHTML += `
+    <div class="match">
+        <div class="teams">
+            ${match.home} vs ${match.away}
+        </div>
+        <div class="time">
+            ${match.kickoff}
+        </div>
+    </div>
+`;
+            }
+
+        });
+
+    }
+
+    countrySelect.addEventListener(
+        "change",
+        displayMatches
+    );
+
+    displayMatches();
+</script>
+ 
+    </script>
+
+</body>
+</html>
